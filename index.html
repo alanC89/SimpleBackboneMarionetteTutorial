@@ -1,0 +1,71 @@
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Marionette Contact Manager</title>
+		<link href="./assets/css/bootstrap.css" rel="stylesheet">
+		<link href="./assets/css/application.css" rel="stylesheet">
+	</head>
+
+	<body>
+
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<span class="brand">Contact manager</span>
+				</div>
+			</div>
+		</div>
+
+		<div id="app-container">
+			<div id="main-region" class="container">
+				<p>Here is static content in the web page. You'll notice that it gets replaced by our app as soon as we start it.</p>
+			</div>			
+		</div>
+
+
+
+		<script src="./assets/js/vendor/jquery.js"></script>
+		<script src="./assets/js/vendor/json2.js"></script>
+		<script src="./assets/js/vendor/underscore.js"></script>
+		<script src="./assets/js/vendor/backbone.js"></script>
+		<script src="./assets/js/vendor/backbone.marionette.js"></script>
+
+		<script type="text/template" id="static-template">
+			<div>
+				<p>This is the test to be displayed by Marionette</p>
+			</div>
+		</script>
+
+		<script type="text/template" id="different-static-template">
+			<p>Second template text</p>
+		</script>
+
+		<script type="text/javascript">
+			var ContactManager = new Marionette.Application();
+
+			ContactManager.StaticView = Marionette.ItemView.extend({
+				template: "#static-template"
+			});
+
+			ContactManager.on("before:start", function(){
+				var RegionContainer = Marionette.LayoutView.extend({
+					el: "#app-container",
+
+					regions: {
+						main: "#main-region"
+					}
+				});
+
+				ContactManager.regions = new RegionContainer();
+			})
+
+			ContactManager.on("start", function(){
+				var staticView = new ContactManager.StaticView();
+				ContactManager.regions.main.show(staticView);
+			});
+
+			ContactManager.start();
+
+		</script>
+	</body>
+</html>
