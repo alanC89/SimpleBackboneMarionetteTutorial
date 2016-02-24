@@ -30,21 +30,32 @@
 		<script src="./assets/js/vendor/backbone.js"></script>
 		<script src="./assets/js/vendor/backbone.marionette.js"></script>
 
-		<script type="text/template" id="static-template">
-			<div>
-				<p>This is the test to be displayed by Marionette</p>
-			</div>
-		</script>
-
-		<script type="text/template" id="different-static-template">
-			<p>Second template text</p>
+		<script type="text/template" id="contact-list-item">
+			<li><%- firstName %> <%- lastName%></li>
 		</script>
 
 		<script type="text/javascript">
 			var ContactManager = new Marionette.Application();
 
-			ContactManager.StaticView = Marionette.ItemView.extend({
-				template: "#static-template"
+			ContactManager.Contact = Backbone.Model.extend({
+				defaults: {
+					firstName: "defaultName"
+				}
+			});
+
+			ContactManager.ContactCollection = Backbone.Collection.extend({
+				model: ContactManager.Contact,
+				comparator: "firstName"
+			});
+
+			ContactManager.ContactItemView = Marionette.ItemView.extend({
+				tagName: "li",
+				template: "#contact-list-item"
+			});
+
+			ContactManager.ContactsView = Marionette.CollectionView.extend({
+				tagName: "ul",
+				childView: ContactManager.ContactItemView
 			});
 
 			ContactManager.on("before:start", function(){
@@ -57,11 +68,33 @@
 				});
 
 				ContactManager.regions = new RegionContainer();
-			})
+			});
+
 
 			ContactManager.on("start", function(){
-				var staticView = new ContactManager.StaticView();
-				ContactManager.regions.main.show(staticView);
+				var contacts = new ContactManager.ContactCollection([
+					{
+						firstName: "Bob",
+						lastName: "Brigram",
+						phoneNumber: "555-0163"
+					},
+					{
+						firstName: "Alice",
+						lastName: "Arten",
+						phoneNumber: "555-0163"
+					},
+					{
+						firstName: "Charlie",
+						lastName: "Campbell",
+						phoneNumber: "555-0163"
+					}
+				]);
+
+				var contactsListView = new ContactManager.ContactsView({
+					collection: contacts
+				});
+
+				ContactManager.regions.main.show(contactsListView);
 			});
 
 			ContactManager.start();
